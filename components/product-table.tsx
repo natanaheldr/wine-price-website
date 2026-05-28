@@ -84,15 +84,15 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
-              <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-ars bg-ars/10 px-2 py-1 rounded-md">
-                  ${formatPesos(p.precioPesos)}
+              <div className="mt-2.5 flex items-center justify-between gap-1.5">
+                <span className="text-[11px] font-mono font-bold text-ars bg-ars/10 px-1.5 py-0.5 rounded">
+                  ARS ${formatPesos(p.precioPesos)}
                 </span>
-                <span className="text-[11px] font-mono font-semibold text-brl">
-                  R$ {formatReales(p.precioReales)}
+                <span className="text-[11px] font-mono font-semibold text-brl whitespace-nowrap">
+                  R${formatReales(p.precioReales)}
                 </span>
-                <span className="text-[11px] font-mono font-bold text-pix ml-auto">
-                  PIX R$ {formatReales(p.precioPix)}
+                <span className="text-[11px] font-mono font-bold text-pix whitespace-nowrap">
+                  R${formatReales(p.precioPix)}
                 </span>
               </div>
             </div>
@@ -145,13 +145,13 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-right">
-                      <span className="text-sm font-mono font-semibold text-brl tabular-nums">
-                        R$ {formatReales(p.precioReales)}
+                      <span className="text-sm font-mono font-semibold text-brl tabular-nums whitespace-nowrap">
+                        R${formatReales(p.precioReales)}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-right">
-                      <span className="text-sm font-mono font-bold text-pix tabular-nums">
-                        R$ {formatReales(p.precioPix)}
+                      <span className="text-sm font-mono font-bold text-pix tabular-nums whitespace-nowrap">
+                        R${formatReales(p.precioPix)}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-right">
