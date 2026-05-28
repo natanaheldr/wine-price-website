@@ -38,6 +38,7 @@ const CAMBIO_STORAGE_KEY = 'lista-precios-cambio'
 export function PriceListApp() {
   const [activeCategory, setActiveCategory] = useState<Category>('vinos')
   const [cambio, setCambio] = useState(280)
+  const [cambioStr, setCambioStr] = useState('280')
   const [showSettings, setShowSettings] = useState(false)
   const [pinInput, setPinInput] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -51,13 +52,18 @@ export function PriceListApp() {
       const value = parseFloat(saved)
       if (!isNaN(value)) {
         setCambio(value)
+        setCambioStr(saved)
       }
     }
   }, [])
 
-  const handleCambioChange = (value: number) => {
-    setCambio(value)
-    localStorage.setItem(CAMBIO_STORAGE_KEY, value.toString())
+  const handleCambioChange = (raw: string) => {
+    setCambioStr(raw)
+    const parsed = parseFloat(raw)
+    if (!isNaN(parsed) && parsed > 0) {
+      setCambio(parsed)
+      localStorage.setItem(CAMBIO_STORAGE_KEY, parsed.toString())
+    }
   }
 
   const getProducts = () => {
@@ -280,12 +286,11 @@ export function PriceListApp() {
                     Tipo de cambio ($ ARS → R$)
                   </label>
                   <Input
-                    type="number"
-                    value={cambio}
-                    onChange={(e) => handleCambioChange(Number(e.target.value))}
+                    type="text"
+                    inputMode="decimal"
+                    value={cambioStr}
+                    onChange={(e) => handleCambioChange(e.target.value)}
                     className="h-14 text-center text-3xl font-mono bg-secondary border-0 font-bold"
-                    step="0.01"
-                    min="0"
                     autoFocus
                   />
                   <p className="text-xs text-muted-foreground text-center">
