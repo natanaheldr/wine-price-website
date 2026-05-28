@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   Upload,
   FileText,
   Loader2,
   Check,
   AlertCircle,
+  ShieldAlert,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,6 +18,7 @@ import {
   type ParsingStep,
 } from '@/lib/pdf-parser'
 import { usePriceOverrides, type PriceOverride } from '@/lib/price-overrides'
+import { getApiQuota, recordApiCall } from '@/lib/api-guard'
 import type { Product } from '@/lib/products-data'
 
 const API_KEY_STORAGE = 'lista-precios-openai-key'
@@ -48,11 +50,24 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
   const [matches, setMatches] = useState<MatchResult[]>([])
   const { setOverrides, overrides: existingOverrides } = usePriceOverrides()
   const [applied, setApplied] = useState(false)
+  const [quota, setQuota] = useState(getApiQuota())
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setQuota(getApiQuota())
+  }, [])
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]
     if (!f) return
+
+    const q = getApiQuota()
+    setQuota(q)
+    if (!q.canProceed) {
+      setError(`Limite de uso alcanzado. Vuelve en ${q.remainingHour === 0 ? '1 hora' : '24 horas'}.`)
+      return
+    }
+
     setFile(f)
     setError('')
     setApplied(false)
@@ -72,6 +87,11 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
     setShowApiInput(false)
     setApiKeyInput('')
     if (file) {
+      const q = getApiQuota()
+      if (!q.canProceed) {
+        setError(`Limite de uso alcanzado. Vuelve en ${q.remainingHour === 0 ? '1 hora' : '24 horas'}.`)
+        return
+      }
       await processFile(file, apiKeyInput.trim())
     }
   }
@@ -80,6 +100,8 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
     try {
       setError('')
       const text = await extractTextFromPDF(f, setStep)
+      recordApiCall()
+      setQuota(getApiQuota())
       const parsed = await parsePricesWithAI(text, key, setStep)
       setStep('done')
 
@@ -142,6 +164,13 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
           </div>
         </div>
 
+        <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-3 bg-background/40 rounded-lg px-3 py-2">
+          <ShieldAlert className="h-3 w-3 shrink-0" />
+          <span>
+            Limite: {quota.remainingHour}/{quota.maxHour} por hora &middot; {quota.remainingDay}/{quota.maxDay} por dia
+          </span>
+        </div>
+
         {showApiInput && (
           <div className="space-y-2 mb-3">
             <label className="text-xs font-medium text-muted-foreground">
@@ -169,8 +198,12 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
 
         {!showApiInput && (
           <div
-            className="border-2 border-dashed border-border/40 rounded-lg p-6 text-center cursor-pointer hover:border-accent/40 transition-colors"
-            onClick={() => fileInputRef.current?.click()}
+            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+              !quota.canProceed
+                ? 'border-destructive/40 cursor-not-allowed opacity-50'
+                : 'border-border/40 hover:border-accent/40'
+            }`}
+            onClick={() => !quota.canProceed || fileInputRef.current?.click()}
           >
             <input
               ref={fileInputRef}
@@ -187,7 +220,7 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
             ) : (
               <div className="text-sm text-muted-foreground">
                 <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
-                Hace clic para seleccionar un PDF
+                {quota.canProceed ? 'Hace clic para seleccionar un PDF' : 'Limite alcanzado'}
               </div>
             )}
           </div>
