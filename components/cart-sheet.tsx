@@ -17,9 +17,10 @@ import {
 interface CartSheetProps {
   whatsappNumber: string
   cambio: number
+  inline?: boolean
 }
 
-export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
+export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
   const [open, setOpen] = useState(false)
   const {
     items,
@@ -75,69 +76,36 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
     window.open(whatsappUrl, '_blank')
   }
 
-  return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <button 
-          className="relative h-10 w-10 rounded-lg bg-secondary/50 border border-border/30 flex items-center justify-center text-foreground hover:bg-secondary hover:border-border/60 transition-all duration-300 group"
-          aria-label="Ver carrito"
-        >
-          <ShoppingCart className="h-5 w-5 group-hover:scale-110 transition-transform" />
-          {getTotalItems() > 0 && (
-            <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center justify-center shadow-lg shadow-accent/40 animate-pulse">
-              {getTotalItems()}
-            </span>
-          )}
-        </button>
-      </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md flex flex-col bg-background border-border/50">
-        <SheetHeader className="border-b border-border/30 pb-4 pt-6">
-          <SheetTitle className="flex items-center gap-3 text-lg text-foreground font-semibold">
-            <ShoppingCart className="h-5 w-5 text-accent" />
-            Pedido
-            {getTotalItems() > 0 && (
-              <span className="ml-auto text-sm font-mono text-muted-foreground">{getTotalItems()} items</span>
-            )}
-          </SheetTitle>
-        </SheetHeader>
-
-        {items.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center px-6">
-            <div className="text-center text-muted-foreground space-y-4">
-              <div className="h-16 w-16 rounded-lg bg-secondary/50 flex items-center justify-center mx-auto border border-border/30">
-                <ShoppingCart className="h-8 w-8 opacity-40" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Carrito vacío</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">Agrega productos para comenzar</p>
-              </div>
+  const cartContent = (
+    <>
+      {items.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center px-6">
+          <div className="text-center text-muted-foreground space-y-4">
+            <div className="h-16 w-16 rounded-2xl bg-secondary/50 flex items-center justify-center mx-auto border border-border/30">
+              <ShoppingCart className="h-8 w-8 opacity-40" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Carrito vacio</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Agrega productos para comenzar</p>
             </div>
           </div>
-        ) : (
-          <>
-            <div className="flex-1 overflow-y-auto py-4 space-y-3 pr-2">
-              {items.map((item) => (
-                <div
-                  key={item.product.id}
-                  className="bg-secondary/40 rounded-lg p-4 border border-border/30 hover:border-border/50 transition-all group"
-                >
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <p className="text-sm font-medium text-foreground leading-snug flex-1 group-hover:text-accent transition-colors">
-                      {item.product.description}
-                    </p>
-                    <button
-                      className="h-7 w-7 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center shrink-0 transition-all hover:scale-110"
-                      onClick={() => removeItem(item.product.id)}
-                      aria-label={`Eliminar ${item.product.description}`}
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-1 bg-background/60 rounded-md p-1">
+        </div>
+      ) : (
+        <>
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+            {items.map((item) => (
+              <div
+                key={item.product.id}
+                className="group flex items-center gap-3 rounded-xl p-3 bg-secondary/40 border border-border/30 hover:border-border/50 transition-all"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-foreground leading-snug truncate">
+                    {item.product.description}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-0.5 bg-background/60 rounded-lg p-0.5">
                       <button
-                        className="h-7 w-7 rounded-md bg-secondary flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground transition-all"
+                        className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
                         onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                         aria-label="Reducir cantidad"
                       >
@@ -153,61 +121,119 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
                             updateQuantity(item.product.id, val)
                           }
                         }}
-                        className="w-12 h-7 text-center text-sm font-bold font-mono bg-transparent border-0 text-foreground"
+                        className="w-8 h-6 text-center text-xs font-bold font-mono bg-transparent border-0 text-foreground p-0"
                       />
                       <button
-                        className="h-7 w-7 rounded-md bg-secondary flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground transition-all"
+                        className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
                         onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                         aria-label="Aumentar cantidad"
                       >
                         <Plus className="h-3 w-3" />
                       </button>
                     </div>
-                    <p className="text-sm font-mono font-bold text-ars min-w-fit">
+                    <span className="text-xs font-mono font-semibold text-ars ml-auto">
                       ${formatPesos(getPrice(item.product, cambio).precioPesos * item.quantity)}
-                    </p>
+                    </span>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="border-t border-border/30 pt-5 mt-4 space-y-4">
-              <div className="space-y-2.5 bg-secondary/30 rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs uppercase tracking-wider text-ars font-semibold">ARS</span>
-                  <span className="text-sm font-mono font-bold text-ars">${formatPesos(totalPesos)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs uppercase tracking-wider text-brl font-semibold">BRL</span>
-                  <span className="text-sm font-mono font-bold text-brl">R${formatReales(totalReales)}</span>
-                </div>
-                <div className="h-px bg-border/30 my-2"></div>
-                <div className="flex justify-between items-center pt-1">
-                  <span className="text-xs uppercase tracking-wider text-pix font-bold">PIX</span>
-                  <span className="text-lg font-mono font-bold text-pix">R${formatReales(totalPix)}</span>
-                </div>
+                <button
+                  className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0 transition-all opacity-0 group-hover:opacity-100"
+                  onClick={() => removeItem(item.product.id)}
+                  aria-label={`Eliminar ${item.product.description}`}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
               </div>
+            ))}
+          </div>
 
-              <div className="flex gap-3">
-                <Button
-                  variant="secondary"
-                  className="flex-1 h-11 rounded-lg text-sm font-medium"
-                  onClick={clearCart}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Vaciar
-                </Button>
-                <Button
-                  className="flex-1 h-11 rounded-lg bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold text-sm shadow-lg shadow-[#25D366]/30"
-                  onClick={sendToWhatsApp}
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  Enviar
-                </Button>
+          <div className="border-t border-border/30 pt-4 mt-4 space-y-4">
+            <div className="space-y-2 bg-secondary/30 rounded-xl p-4">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-xs uppercase tracking-wider text-ars font-semibold">ARS</span>
+                <span className="text-sm font-mono font-bold text-ars">${formatPesos(totalPesos)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-xs uppercase tracking-wider text-brl font-semibold">BRL</span>
+                <span className="text-sm font-mono font-bold text-brl">R${formatReales(totalReales)}</span>
+              </div>
+              <div className="h-px bg-border/30 my-2"></div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs uppercase tracking-wider text-pix font-bold">PIX</span>
+                <span className="text-base font-mono font-bold text-pix">R${formatReales(totalPix)}</span>
               </div>
             </div>
-          </>
-        )}
+
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="flex-1 h-10 rounded-xl text-xs font-medium"
+                onClick={clearCart}
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                Vaciar
+              </Button>
+              <Button
+                size="sm"
+                className="flex-[2] h-10 rounded-xl bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold text-xs shadow-lg shadow-[#25D366]/20"
+                onClick={sendToWhatsApp}
+              >
+                <Send className="h-3.5 w-3.5 mr-1.5" />
+                Enviar pedido
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  )
+
+  if (inline) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center gap-2 pb-4 border-b border-border/30 mb-4">
+          <ShoppingCart className="h-4 w-4 text-accent" />
+          <span className="text-sm font-semibold text-foreground">Pedido</span>
+          {getTotalItems() > 0 && (
+            <span className="ml-auto text-xs font-mono text-muted-foreground bg-secondary/60 rounded-full px-2 py-0.5">
+              {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'}
+            </span>
+          )}
+        </div>
+        {cartContent}
+      </div>
+    )
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <button 
+          className="relative h-10 w-10 rounded-xl bg-secondary/50 border border-border/30 flex items-center justify-center text-foreground hover:bg-secondary hover:border-border/60 transition-all duration-300 group"
+          aria-label="Ver carrito"
+        >
+          <ShoppingCart className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          {getTotalItems() > 0 && (
+            <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-accent text-accent-foreground text-[10px] font-bold flex items-center justify-center shadow-lg shadow-accent/40">
+              {getTotalItems()}
+            </span>
+          )}
+        </button>
+      </SheetTrigger>
+      <SheetContent className="w-full sm:max-w-md flex flex-col bg-background border-border/50 p-6">
+        <SheetHeader className="border-b border-border/30 pb-4 mb-4">
+          <SheetTitle className="flex items-center gap-3 text-base text-foreground font-semibold">
+            <ShoppingCart className="h-4 w-4 text-accent" />
+            Pedido
+            {getTotalItems() > 0 && (
+              <span className="ml-auto text-xs font-mono text-muted-foreground bg-secondary/60 rounded-full px-2 py-0.5">
+                {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'}
+              </span>
+            )}
+          </SheetTitle>
+        </SheetHeader>
+        {cartContent}
       </SheetContent>
     </Sheet>
   )

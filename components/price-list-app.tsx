@@ -22,18 +22,13 @@ import {
 type Category = 'vinos' | 'champagne' | 'fernet'
 
 const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
-  { id: 'vinos', label: 'Vinos', icon: <Wine className="h-4 w-4" /> },
-  { id: 'champagne', label: 'Champagne', icon: <Sparkles className="h-4 w-4" /> },
-  { id: 'fernet', label: 'Fernet', icon: <Coffee className="h-4 w-4" /> },
+  { id: 'vinos', label: 'Vinos', icon: <Wine className="h-3.5 w-3.5" /> },
+  { id: 'champagne', label: 'Champagne', icon: <Sparkles className="h-3.5 w-3.5" /> },
+  { id: 'fernet', label: 'Fernet', icon: <Coffee className="h-3.5 w-3.5" /> },
 ]
 
-// Número de WhatsApp para pedidos (reemplaza con el tuyo)
-const WHATSAPP_NUMBER = '5491100000000'
-
-// PIN de acceso para configuración (cámbialo por uno seguro)
+const WHATSAPP_NUMBER = '5493754404433'
 const ADMIN_PIN = '147258369'
-
-// Clave para localStorage
 const CAMBIO_STORAGE_KEY = 'lista-precios-cambio'
 
 export function PriceListApp() {
@@ -115,13 +110,13 @@ export function PriceListApp() {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="sticky top-0 z-50 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-2xl border-b border-border/30">
-          <div className="max-w-6xl mx-auto px-4 py-5">
+          <div className="max-w-6xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
-                  <h1 className="text-xl font-semibold text-foreground tracking-tight">Lista de Precios de Vinos, Champagne y Fernet</h1>
-                  <div className="h-1 w-1 rounded-full bg-accent/60"></div>
-                  <span className="text-sm font-mono text-accent font-bold">{cambio}</span>
+                  <h1 className="text-lg font-semibold text-foreground tracking-tight truncate">Lista de Precios</h1>
+                  <div className="h-1 w-1 rounded-full bg-accent/60 shrink-0"></div>
+                  <span className="text-sm font-mono text-accent font-bold shrink-0">{cambio}</span>
                 </div>
               </div>
               
@@ -130,37 +125,38 @@ export function PriceListApp() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 text-muted-foreground hover:text-foreground hover:bg-secondary/50 opacity-40 hover:opacity-100 transition-all duration-300"
+                  className="h-9 w-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 opacity-40 hover:opacity-100 transition-all duration-300"
                   onClick={handleOpenSettings}
-                  aria-label="Configuración"
+                  aria-label="Configuracion"
                   title="Solo para administrador"
                 >
-                  <Settings className="h-5 w-5" />
+                  <Settings className="h-[18px] w-[18px]" />
                 </Button>
-                <CartSheet whatsappNumber={WHATSAPP_NUMBER} cambio={cambio} />
+                {/* Mobile cart trigger */}
+                <div className="lg:hidden">
+                  <CartSheet whatsappNumber={WHATSAPP_NUMBER} cambio={cambio} />
+                </div>
               </div>
             </div>
           </div>
         </header>
 
         {/* Category tabs */}
-        <div className="sticky top-[77px] z-40 bg-gradient-to-b from-background/80 via-background/70 to-transparent backdrop-blur-xl border-b border-border/20 py-2">
+        <div className="sticky top-[65px] z-40 bg-gradient-to-b from-background/80 via-background/70 to-transparent backdrop-blur-xl border-b border-border/20 py-3">
           <div className="max-w-6xl mx-auto px-4">
-            <nav className="flex gap-1.5 overflow-x-auto scrollbar-hide" aria-label="Categorías">
+            <nav className="flex gap-1 p-0.5 bg-secondary/40 rounded-xl w-fit" aria-label="Categorias">
               {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap group ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-[10px] text-xs font-medium transition-all duration-300 whitespace-nowrap ${
                     activeCategory === cat.id
-                      ? 'bg-accent text-background shadow-lg shadow-accent/30'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+                      ? 'bg-card text-foreground shadow-sm border border-border/40'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                   aria-current={activeCategory === cat.id ? 'page' : undefined}
                 >
-                  <span className={`transition-transform duration-300 ${activeCategory === cat.id ? 'scale-110' : 'group-hover:scale-110'}`}>
-                    {cat.icon}
-                  </span>
+                  {cat.icon}
                   {cat.label}
                 </button>
               ))}
@@ -169,27 +165,37 @@ export function PriceListApp() {
         </div>
 
         {/* Main content */}
-        <main className="max-w-6xl mx-auto px-4 py-8">
-          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-            Consultá nuestra lista de precios actualizada de vinos, champagne y fernet. 
-            Todos los precios están expresados en Pesos Argentinos (ARS), Reales (BRL) y PIX. 
-            Hacé tu pedido por WhatsApp agregando productos al carrito.
-          </p>
-          <ProductTable products={getProducts()} cambio={cambio} />
+        <main className="max-w-6xl mx-auto px-4 py-6">
+          <div className="flex gap-6">
+            {/* Products */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                Todos los precios en ARS, BRL y PIX. Agrega productos al carrito y envianos tu pedido por WhatsApp.
+              </p>
+              <ProductTable products={getProducts()} cambio={cambio} />
+            </div>
+
+            {/* Desktop cart sidebar */}
+            <aside className="hidden lg:block w-[300px] shrink-0">
+              <div className="sticky top-[133px] max-h-[calc(100vh-155px)] flex flex-col bg-card border border-border/40 rounded-xl p-4">
+                <CartSheet whatsappNumber={WHATSAPP_NUMBER} cambio={cambio} inline />
+              </div>
+            </aside>
+          </div>
         </main>
 
         {/* Footer */}
         <footer className="border-t border-border/20 bg-gradient-to-t from-background via-background/95 to-background/90">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-              <div className="flex items-center gap-4">
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-3">
                 <a href="#vinos" onClick={() => setActiveCategory('vinos')} className="hover:text-foreground transition-colors">Vinos</a>
                 <span className="text-border">·</span>
                 <a href="#champagne" onClick={() => setActiveCategory('champagne')} className="hover:text-foreground transition-colors">Champagne</a>
                 <span className="text-border">·</span>
                 <a href="#fernet" onClick={() => setActiveCategory('fernet')} className="hover:text-foreground transition-colors">Fernet</a>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <span>Himmelimherzen</span>
                 <span className="text-border">·</span>
                 <span>Precios actualizados diariamente</span>
@@ -236,7 +242,7 @@ export function PriceListApp() {
                     <div className="relative">
                       <Input
                         type={showPin ? 'text' : 'password'}
-                        placeholder="••••••••••"
+                        placeholder="**********"
                         value={pinInput}
                         onChange={(e) => {
                           setPinInput(e.target.value)
