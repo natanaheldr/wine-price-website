@@ -40,7 +40,7 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
         <Input
           type="text"
-          placeholder="Buscar producto..."
+          placeholder="Buscar produto..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-10 pl-10 pr-9 bg-secondary/30 border border-border/30 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-accent/50 transition-all"
@@ -49,7 +49,7 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
           <button
             onClick={() => setSearch('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Limpiar busqueda"
+            aria-label="Limpar busca"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -79,7 +79,7 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
                 <button
                   className="shrink-0 h-9 w-9 rounded-lg bg-accent/90 flex items-center justify-center text-accent-foreground hover:bg-accent hover:shadow-lg hover:shadow-accent/25 transition-all active:scale-90"
                   onClick={() => addItem(product)}
-                  aria-label={`Agregar ${product.description}`}
+                  aria-label={`Adicionar ${product.description}`}
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -100,7 +100,7 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
         })}
         {filteredProducts.length === 0 && (
           <div className="py-16 text-center">
-            <p className="text-sm text-muted-foreground">Sin resultados</p>
+            <p className="text-sm text-muted-foreground">Sem resultados</p>
           </div>
         )}
       </div>
@@ -158,7 +158,7 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
                       <button
                         className="h-8 w-8 rounded-lg bg-accent/90 flex items-center justify-center text-accent-foreground opacity-0 group-hover:opacity-100 hover:bg-accent hover:shadow-lg hover:shadow-accent/25 transition-all active:scale-90"
                         onClick={() => addItem(product)}
-                        aria-label={`Agregar ${product.description}`}
+                        aria-label={`Adicionar ${product.description}`}
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -169,7 +169,7 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
               {filteredProducts.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-5 py-16 text-center text-sm text-muted-foreground">
-                    Sin resultados
+                    Sem resultados
                   </td>
                 </tr>
               )}

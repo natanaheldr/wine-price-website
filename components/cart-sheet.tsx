@@ -85,8 +85,8 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
               <ShoppingCart className="h-8 w-8 opacity-40" />
             </div>
             <div>
-              <p className="text-sm font-medium">Carrito vacio</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">Agrega productos para comenzar</p>
+              <p className="text-sm font-medium">Carrinho vazio</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Adicione produtos para começar</p>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
                       <button
                         className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
                         onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                        aria-label="Reducir cantidad"
+                        aria-label="Reduzir quantidade"
                       >
                         <Minus className="h-3 w-3" />
                       </button>
@@ -126,7 +126,7 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
                       <button
                         className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
                         onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                        aria-label="Aumentar cantidad"
+                        aria-label="Aumentar quantidade"
                       >
                         <Plus className="h-3 w-3" />
                       </button>
@@ -139,7 +139,7 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
                 <button
                   className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0 transition-all opacity-0 group-hover:opacity-100"
                   onClick={() => removeItem(item.product.id)}
-                  aria-label={`Eliminar ${item.product.description}`}
+                  aria-label={`Remover ${item.product.description}`}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -172,7 +172,7 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
                 onClick={clearCart}
               >
                 <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                Vaciar
+                Esvaziar
               </Button>
               <Button
                 size="sm"
@@ -194,10 +194,10 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-2 pb-4 border-b border-border/30 mb-4">
           <ShoppingCart className="h-4 w-4 text-accent" />
-          <span className="text-sm font-semibold text-foreground">Pedido</span>
+          <span className="text-sm font-semibold text-foreground">Carrinho</span>
           {getTotalItems() > 0 && (
             <span className="ml-auto text-xs font-mono text-muted-foreground bg-secondary/60 rounded-full px-2 py-0.5">
-              {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'}
+              {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'itens'}
             </span>
           )}
         </div>
@@ -211,7 +211,7 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
       <SheetTrigger asChild>
         <button 
           className="relative h-10 w-10 rounded-xl bg-secondary/50 border border-border/30 flex items-center justify-center text-foreground hover:bg-secondary hover:border-border/60 transition-all duration-300 group"
-          aria-label="Ver carrito"
+          aria-label="Ver carrinho"
         >
           <ShoppingCart className="h-5 w-5 group-hover:scale-110 transition-transform" />
           {getTotalItems() > 0 && (
@@ -225,10 +225,10 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
         <SheetHeader className="border-b border-border/30 pb-4 mb-4">
           <SheetTitle className="flex items-center gap-3 text-base text-foreground font-semibold">
             <ShoppingCart className="h-4 w-4 text-accent" />
-            Pedido
+            Carrinho
             {getTotalItems() > 0 && (
               <span className="ml-auto text-xs font-mono text-muted-foreground bg-secondary/60 rounded-full px-2 py-0.5">
-                {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'}
+                {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'itens'}
               </span>
             )}
           </SheetTitle>

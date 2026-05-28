@@ -113,10 +113,11 @@ export function PriceListApp() {
           <div className="max-w-6xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <h1 className="text-lg font-semibold text-foreground tracking-tight truncate">Lista de Precios</h1>
-                  <div className="h-1 w-1 rounded-full bg-accent/60 shrink-0"></div>
-                  <span className="text-sm font-mono text-accent font-bold shrink-0">{cambio}</span>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-semibold text-foreground tracking-tight truncate">Lista de Preços</h1>
+                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono font-bold text-accent bg-accent/10 border border-accent/20 rounded-md px-2 py-0.5 shrink-0">
+                    CAMBIO: {cambio}
+                  </span>
                 </div>
               </div>
               
@@ -170,7 +171,7 @@ export function PriceListApp() {
             {/* Products */}
             <div className="flex-1 min-w-0">
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                Todos los precios en ARS, BRL y PIX. Agrega productos al carrito y envianos tu pedido por WhatsApp.
+                Todos os preços em ARS, BRL e PIX. Adicione produtos ao carrinho e envie seu pedido pelo WhatsApp.
               </p>
               <ProductTable products={getProducts()} cambio={cambio} />
             </div>
@@ -198,7 +199,7 @@ export function PriceListApp() {
               <div className="flex items-center gap-3">
                 <span>Himmelimherzen</span>
                 <span className="text-border">·</span>
-                <span>Precios actualizados diariamente</span>
+                <span>Preços atualizados diariamente</span>
                 <span className="text-border">·</span>
                 <a
                   href={`https://wa.me/${WHATSAPP_NUMBER}`}

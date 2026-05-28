@@ -35,8 +35,8 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       className="h-10 w-10 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-300"
-      aria-label={isLight ? 'Activar modo oscuro' : 'Activar modo claro'}
-      title={isLight ? 'Modo oscuro' : 'Modo claro'}
+      aria-label={isLight ? 'Ativar modo escuro' : 'Ativar modo claro'}
+      title={isLight ? 'Modo escuro' : 'Modo claro'}
     >
       {isLight ? (
         <Sun className="h-5 w-5" />
