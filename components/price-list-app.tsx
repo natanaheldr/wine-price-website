@@ -6,6 +6,7 @@ import { vinosData, champagneData, fernetData } from '@/lib/products-data'
 import { CartProvider } from '@/lib/cart-context'
 import { PriceOverridesProvider } from '@/lib/price-overrides'
 import { PdfUploadSection } from '@/components/pdf-upload-section'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { ProductTable } from '@/components/product-table'
 import { CartSheet } from '@/components/cart-sheet'
 import { Button } from '@/components/ui/button'
@@ -125,6 +126,7 @@ export function PriceListApp() {
               </div>
               
               <div className="flex items-center gap-1">
+                <ThemeToggle />
                 <Button
                   variant="ghost"
                   size="icon"
