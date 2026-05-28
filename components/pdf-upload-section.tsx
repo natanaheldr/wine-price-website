@@ -16,7 +16,7 @@ import {
   type ParsedProduct,
   type ParsingStep,
 } from '@/lib/pdf-parser'
-import { usePriceOverrides } from '@/lib/price-overrides'
+import { usePriceOverrides, type PriceOverride } from '@/lib/price-overrides'
 import type { Product } from '@/lib/products-data'
 
 const API_KEY_STORAGE = 'lista-precios-openai-key'
@@ -35,17 +35,18 @@ interface MatchResult {
 }
 
 interface PdfUploadSectionProps {
-  allProducts: Product[]
+  products: Product[]
+  categoryName: string
 }
 
-export function PdfUploadSection({ allProducts }: PdfUploadSectionProps) {
+export function PdfUploadSection({ products, categoryName }: PdfUploadSectionProps) {
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [showApiInput, setShowApiInput] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [step, setStep] = useState<ParsingStep | null>(null)
   const [error, setError] = useState('')
   const [matches, setMatches] = useState<MatchResult[]>([])
-  const { setOverrides } = usePriceOverrides()
+  const { setOverrides, overrides: existingOverrides } = usePriceOverrides()
   const [applied, setApplied] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -84,7 +85,7 @@ export function PdfUploadSection({ allProducts }: PdfUploadSectionProps) {
 
       const results: MatchResult[] = []
       for (const p of parsed) {
-        const match = findBestMatch(p.description, allProducts)
+        const match = findBestMatch(p.description, products)
         if (match) {
           results.push({
             productId: match.id,
@@ -111,16 +112,15 @@ export function PdfUploadSection({ allProducts }: PdfUploadSectionProps) {
   }
 
   const handleApply = () => {
-    const overrides: Record<string, { precioPesos: number; precioReales: number; precioPix: number }> =
-      {}
+    const merged = { ...existingOverrides }
     for (const m of matches) {
-      overrides[m.productId] = {
+      merged[m.productId] = {
         precioPesos: m.newPesos ?? m.originalPesos,
         precioReales: m.newReales ?? m.originalReales,
         precioPix: m.newPix ?? m.originalPix,
       }
     }
-    setOverrides(overrides)
+    setOverrides(merged)
     setApplied(true)
   }
 
@@ -133,10 +133,10 @@ export function PdfUploadSection({ allProducts }: PdfUploadSectionProps) {
           <Upload className="h-5 w-5 text-accent mt-0.5 shrink-0" />
           <div>
             <h4 className="text-sm font-semibold text-foreground">
-              Actualizar precios desde PDF
+              {categoryName}
             </h4>
             <p className="text-xs text-muted-foreground mt-1">
-              Subi un PDF con la lista de precios actualizada. La IA lo procesara y
+              Subi un PDF con los precios de {categoryName.toLowerCase()}. La IA lo procesara y
               aplicara los cambios.
             </p>
           </div>

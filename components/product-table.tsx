@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input'
 
 interface ProductTableProps {
   products: Product[]
+  cambio: number
 }
 
-export function ProductTable({ products }: ProductTableProps) {
+export function ProductTable({ products, cambio }: ProductTableProps) {
   const [search, setSearch] = useState('')
   const { addItem } = useCart()
   const { getPrice } = usePriceOverrides()
@@ -77,15 +78,15 @@ export function ProductTable({ products }: ProductTableProps) {
             <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-mono">
               <div className="bg-ars/10 rounded-md p-2 text-center border border-ars/30">
                 <div className="text-ars text-[10px] uppercase">ARS</div>
-                <div className="text-ars font-bold">{formatPesos(getPrice(product).precioPesos)}</div>
+                <div className="text-ars font-bold">{formatPesos(getPrice(product, cambio).precioPesos)}</div>
               </div>
               <div className="bg-brl/10 rounded-md p-2 text-center border border-brl/30">
                 <div className="text-brl text-[10px] uppercase">BRL</div>
-                <div className="text-brl font-bold">{formatReales(getPrice(product).precioReales)}</div>
+                <div className="text-brl font-bold">{formatReales(getPrice(product, cambio).precioReales)}</div>
               </div>
               <div className="bg-pix/10 rounded-md p-2 text-center border border-pix/30">
                 <div className="text-pix text-[10px] uppercase font-bold">PIX</div>
-                <div className="text-pix font-bold">{formatReales(getPrice(product).precioPix)}</div>
+                <div className="text-pix font-bold">{formatReales(getPrice(product, cambio).precioPix)}</div>
               </div>
             </div>
           </div>
@@ -128,13 +129,13 @@ export function ProductTable({ products }: ProductTableProps) {
                     {product.description}
                   </td>
                   <td className="px-6 py-4 text-sm text-ars text-right font-mono font-semibold tabular-nums">
-                    {formatPesos(getPrice(product).precioPesos)}
+                    {formatPesos(getPrice(product, cambio).precioPesos)}
                   </td>
                   <td className="px-6 py-4 text-sm text-brl text-right font-mono font-semibold tabular-nums">
-                    {formatReales(getPrice(product).precioReales)}
+                    {formatReales(getPrice(product, cambio).precioReales)}
                   </td>
                   <td className="px-6 py-4 text-sm text-pix text-right font-mono font-bold tabular-nums">
-                    {formatReales(getPrice(product).precioPix)}
+                    {formatReales(getPrice(product, cambio).precioPix)}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button

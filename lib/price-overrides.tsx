@@ -14,7 +14,10 @@ interface PriceOverridesContextType {
   overrides: Record<string, PriceOverride>
   setOverrides: (overrides: Record<string, PriceOverride>) => void
   clearOverrides: () => void
-  getPrice: (product: { id: string; precioPesos: number; precioReales: number; precioPix: number }) => {
+  getPrice: (
+    product: { id: string; precioPesos: number; precioReales: number; precioPix: number },
+    cambio: number,
+  ) => {
     precioPesos: number
     precioReales: number
     precioPix: number
@@ -50,15 +53,19 @@ export function PriceOverridesProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const getPrice = useCallback(
-    (product: { id: string; precioPesos: number; precioReales: number; precioPix: number }) => {
+    (
+      product: { id: string; precioPesos: number; precioReales: number; precioPix: number },
+      cambio: number,
+    ) => {
       const override = overrides[product.id]
       if (override) {
         return override
       }
+      const computedReales = cambio > 0 ? product.precioPesos / cambio : product.precioReales
       return {
         precioPesos: product.precioPesos,
-        precioReales: product.precioReales,
-        precioPix: product.precioPix,
+        precioReales: computedReales,
+        precioPix: computedReales,
       }
     },
     [overrides],

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Wine, Sparkles, Coffee, Settings, Check, AlertCircle, Eye, EyeOff } from 'lucide-react'
+import { Wine, Sparkles, Coffee, Settings, AlertCircle, Eye, EyeOff, ExternalLink } from 'lucide-react'
 import { vinosData, champagneData, fernetData } from '@/lib/products-data'
 import { CartProvider } from '@/lib/cart-context'
 import { PriceOverridesProvider } from '@/lib/price-overrides'
@@ -10,7 +10,6 @@ import { ProductTable } from '@/components/product-table'
 import { CartSheet } from '@/components/cart-sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ExternalLink } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -20,8 +19,6 @@ import {
 } from '@/components/ui/dialog'
 
 type Category = 'vinos' | 'champagne' | 'fernet'
-
-const allProducts = [...vinosData, ...champagneData, ...fernetData]
 
 const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
   { id: 'vinos', label: 'Vinos', icon: <Wine className="h-4 w-4" /> },
@@ -44,22 +41,24 @@ export function PriceListApp() {
   const [showSettings, setShowSettings] = useState(false)
   const [pinInput, setPinInput] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [tempCambio, setTempCambio] = useState(280)
   const [pinError, setPinError] = useState(false)
   const [showPin, setShowPin] = useState(false)
   const [attemptCount, setAttemptCount] = useState(0)
 
-  // Cargar el cambio guardado al montar
   useEffect(() => {
     const saved = localStorage.getItem(CAMBIO_STORAGE_KEY)
     if (saved) {
       const value = parseFloat(saved)
       if (!isNaN(value)) {
         setCambio(value)
-        setTempCambio(value)
       }
     }
   }, [])
+
+  const handleCambioChange = (value: number) => {
+    setCambio(value)
+    localStorage.setItem(CAMBIO_STORAGE_KEY, value.toString())
+  }
 
   const getProducts = () => {
     switch (activeCategory) {
@@ -77,7 +76,6 @@ export function PriceListApp() {
     setPinInput('')
     setIsAuthenticated(false)
     setPinError(false)
-    setTempCambio(cambio)
     setShowPin(false)
     setAttemptCount(0)
   }
@@ -102,12 +100,6 @@ export function PriceListApp() {
       setPinInput('')
       setShowPin(false)
     }
-  }
-
-  const handleSaveCambio = () => {
-    setCambio(tempCambio)
-    localStorage.setItem(CAMBIO_STORAGE_KEY, tempCambio.toString())
-    handleCloseSettings()
   }
 
   return (
@@ -175,7 +167,7 @@ export function PriceListApp() {
             Todos los precios están expresados en Pesos Argentinos (ARS), Reales (BRL) y PIX. 
             Hacé tu pedido por WhatsApp agregando productos al carrito.
           </p>
-          <ProductTable products={getProducts()} />
+          <ProductTable products={getProducts()} cambio={cambio} />
         </main>
 
         {/* Footer */}
@@ -277,43 +269,38 @@ export function PriceListApp() {
             ) : (
               <>
                 <DialogHeader className="space-y-3">
-                  <DialogTitle className="text-xl">Tipo de Cambio</DialogTitle>
+                  <DialogTitle className="text-xl">Configuracion</DialogTitle>
                   <DialogDescription>
-                    Actualiza el valor del cambio peso a real
+                    Actualiza el tipo de cambio y los precios desde PDF
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                      Valor actual ($ ARS → R$)
-                    </label>
-                    <Input
-                      type="number"
-                      value={tempCambio}
-                      onChange={(e) => setTempCambio(Number(e.target.value))}
-                      className="h-14 text-center text-3xl font-mono bg-secondary border-0 font-bold"
-                      step="0.01"
-                      min="0"
-                      autoFocus
-                    />
-                    <p className="text-xs text-muted-foreground text-center">
-                      Este cambio se aplicará a todos los precios
-                    </p>
-                  </div>
-
-                  <Button 
-                    onClick={handleSaveCambio}
-                    className="w-full h-11 gap-2"
-                  >
-                    <Check className="h-4 w-4" />
-                    Guardar cambios
-                  </Button>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Tipo de cambio ($ ARS → R$)
+                  </label>
+                  <Input
+                    type="number"
+                    value={cambio}
+                    onChange={(e) => handleCambioChange(Number(e.target.value))}
+                    className="h-14 text-center text-3xl font-mono bg-secondary border-0 font-bold"
+                    step="0.01"
+                    min="0"
+                    autoFocus
+                  />
+                  <p className="text-xs text-muted-foreground text-center">
+                    Los precios en BRL y PIX se actualizan en tiempo real
+                  </p>
                 </div>
 
                 <div className="border-t border-border/30 my-2"></div>
 
-                <PdfUploadSection allProducts={allProducts} />
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-foreground">Actualizar precios por categoria</h4>
+                  <PdfUploadSection products={vinosData} categoryName="Vinos" />
+                  <PdfUploadSection products={champagneData} categoryName="Champagne" />
+                  <PdfUploadSection products={fernetData} categoryName="Fernet" />
+                </div>
               </>
             )}
           </DialogContent>

@@ -26,27 +26,24 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
     removeItem,
     updateQuantity,
     clearCart,
-    getTotalPesos,
-    getTotalReales,
-    getTotalPix,
     getTotalItems,
   } = useCart()
 
   const { getPrice } = usePriceOverrides()
 
   const totalPesos = useMemo(
-    () => items.reduce((t, i) => t + getPrice(i.product).precioPesos * i.quantity, 0),
-    [items, getPrice],
+    () => items.reduce((t, i) => t + getPrice(i.product, cambio).precioPesos * i.quantity, 0),
+    [items, getPrice, cambio],
   )
 
   const totalReales = useMemo(
-    () => items.reduce((t, i) => t + getPrice(i.product).precioReales * i.quantity, 0),
-    [items, getPrice],
+    () => items.reduce((t, i) => t + getPrice(i.product, cambio).precioReales * i.quantity, 0),
+    [items, getPrice, cambio],
   )
 
   const totalPix = useMemo(
-    () => items.reduce((t, i) => t + getPrice(i.product).precioPix * i.quantity, 0),
-    [items, getPrice],
+    () => items.reduce((t, i) => t + getPrice(i.product, cambio).precioPix * i.quantity, 0),
+    [items, getPrice, cambio],
   )
 
   const formatPesos = (value: number) => {
@@ -65,7 +62,7 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
     
     items.forEach((item, index) => {
       message += `${index + 1}. ${item.product.description}\n`
-      message += `   x${item.quantity} = $${formatPesos(getPrice(item.product).precioPesos * item.quantity)}\n\n`
+      message += `   x${item.quantity} = $${formatPesos(getPrice(item.product, cambio).precioPesos * item.quantity)}\n\n`
     })
 
     message += '---\n'
@@ -167,7 +164,7 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
                       </button>
                     </div>
                     <p className="text-sm font-mono font-bold text-ars min-w-fit">
-                      ${formatPesos(getPrice(item.product).precioPesos * item.quantity)}
+                      ${formatPesos(getPrice(item.product, cambio).precioPesos * item.quantity)}
                     </p>
                   </div>
                 </div>

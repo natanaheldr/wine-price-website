@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
-2:I[79621,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js","/wine-price-website/_next/static/chunks/0k-tat60b~z0f.js"],"PriceListApp",1]
+2:I[79621,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js","/wine-price-website/_next/static/chunks/0ehbk8tyn.1go.js"],"PriceListApp",1]
 3:I[97367,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/wine-price-website/_next/static/chunks/0k-tat60b~z0f.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"U6tkXM_M83CnI7fm8wvjx"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/wine-price-website/_next/static/chunks/0ehbk8tyn.1go.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"o4eKfoDhV0t76Bs0nUvkQ"}
 5:null
