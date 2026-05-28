@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Wine, Sparkles, Coffee, Settings, Check, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { vinosData, champagneData, fernetData } from '@/lib/products-data'
 import { CartProvider } from '@/lib/cart-context'
+import { PriceOverridesProvider } from '@/lib/price-overrides'
+import { PdfUploadSection } from '@/components/pdf-upload-section'
 import { ProductTable } from '@/components/product-table'
 import { CartSheet } from '@/components/cart-sheet'
 import { Button } from '@/components/ui/button'
@@ -18,6 +20,8 @@ import {
 } from '@/components/ui/dialog'
 
 type Category = 'vinos' | 'champagne' | 'fernet'
+
+const allProducts = [...vinosData, ...champagneData, ...fernetData]
 
 const categories: { id: Category; label: string; icon: React.ReactNode }[] = [
   { id: 'vinos', label: 'Vinos', icon: <Wine className="h-4 w-4" /> },
@@ -107,7 +111,8 @@ export function PriceListApp() {
   }
 
   return (
-    <CartProvider>
+    <PriceOverridesProvider>
+      <CartProvider>
       <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="sticky top-0 z-50 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-2xl border-b border-border/30">
@@ -204,7 +209,7 @@ export function PriceListApp() {
 
         {/* Settings Dialog */}
         <Dialog open={showSettings} onOpenChange={handleCloseSettings}>
-          <DialogContent className="sm:max-w-sm border-border bg-card">
+          <DialogContent className="sm:max-w-lg border-border bg-card max-h-[85vh] overflow-y-auto">
             {!isAuthenticated ? (
               <>
                 <DialogHeader className="space-y-3">
@@ -305,11 +310,16 @@ export function PriceListApp() {
                     Guardar cambios
                   </Button>
                 </div>
+
+                <div className="border-t border-border/30 my-2"></div>
+
+                <PdfUploadSection allProducts={allProducts} />
               </>
             )}
           </DialogContent>
         </Dialog>
       </div>
     </CartProvider>
+    </PriceOverridesProvider>
   )
 }

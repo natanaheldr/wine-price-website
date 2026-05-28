@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useCart } from '@/lib/cart-context'
+import { usePriceOverrides } from '@/lib/price-overrides'
 import { ShoppingCart, X, Minus, Plus, Send, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -31,6 +32,23 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
     getTotalItems,
   } = useCart()
 
+  const { getPrice } = usePriceOverrides()
+
+  const totalPesos = useMemo(
+    () => items.reduce((t, i) => t + getPrice(i.product).precioPesos * i.quantity, 0),
+    [items, getPrice],
+  )
+
+  const totalReales = useMemo(
+    () => items.reduce((t, i) => t + getPrice(i.product).precioReales * i.quantity, 0),
+    [items, getPrice],
+  )
+
+  const totalPix = useMemo(
+    () => items.reduce((t, i) => t + getPrice(i.product).precioPix * i.quantity, 0),
+    [items, getPrice],
+  )
+
   const formatPesos = (value: number) => {
     return value.toLocaleString('es-AR')
   }
@@ -47,13 +65,13 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
     
     items.forEach((item, index) => {
       message += `${index + 1}. ${item.product.description}\n`
-      message += `   x${item.quantity} = $${formatPesos(item.product.precioPesos * item.quantity)}\n\n`
+      message += `   x${item.quantity} = $${formatPesos(getPrice(item.product).precioPesos * item.quantity)}\n\n`
     })
 
     message += '---\n'
-    message += `*TOTAL ARS:* $${formatPesos(getTotalPesos())}\n`
-    message += `*TOTAL BRL:* R$${formatReales(getTotalReales())}\n`
-    message += `*TOTAL PIX:* R$${formatReales(getTotalPix())}`
+    message += `*TOTAL ARS:* $${formatPesos(totalPesos)}\n`
+    message += `*TOTAL BRL:* R$${formatReales(totalReales)}\n`
+    message += `*TOTAL PIX:* R$${formatReales(totalPix)}`
 
     const encodedMessage = encodeURIComponent(message)
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
@@ -149,7 +167,7 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
                       </button>
                     </div>
                     <p className="text-sm font-mono font-bold text-ars min-w-fit">
-                      ${formatPesos(item.product.precioPesos * item.quantity)}
+                      ${formatPesos(getPrice(item.product).precioPesos * item.quantity)}
                     </p>
                   </div>
                 </div>
@@ -160,16 +178,16 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
               <div className="space-y-2.5 bg-secondary/30 rounded-lg p-4">
                 <div className="flex justify-between items-center">
                   <span className="text-xs uppercase tracking-wider text-ars font-semibold">ARS</span>
-                  <span className="text-sm font-mono font-bold text-ars">${formatPesos(getTotalPesos())}</span>
+                  <span className="text-sm font-mono font-bold text-ars">${formatPesos(totalPesos)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs uppercase tracking-wider text-brl font-semibold">BRL</span>
-                  <span className="text-sm font-mono font-bold text-brl">R${formatReales(getTotalReales())}</span>
+                  <span className="text-sm font-mono font-bold text-brl">R${formatReales(totalReales)}</span>
                 </div>
                 <div className="h-px bg-border/30 my-2"></div>
                 <div className="flex justify-between items-center pt-1">
                   <span className="text-xs uppercase tracking-wider text-pix font-bold">PIX</span>
-                  <span className="text-lg font-mono font-bold text-pix">R${formatReales(getTotalPix())}</span>
+                  <span className="text-lg font-mono font-bold text-pix">R${formatReales(totalPix)}</span>
                 </div>
               </div>
 

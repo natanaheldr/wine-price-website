@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import type { Product } from '@/lib/products-data'
 import { useCart } from '@/lib/cart-context'
+import { usePriceOverrides } from '@/lib/price-overrides'
 import { Plus, Search, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
@@ -13,6 +14,7 @@ interface ProductTableProps {
 export function ProductTable({ products }: ProductTableProps) {
   const [search, setSearch] = useState('')
   const { addItem } = useCart()
+  const { getPrice } = usePriceOverrides()
 
   const filteredProducts = useMemo(() => {
     if (!search.trim()) return products
@@ -75,15 +77,15 @@ export function ProductTable({ products }: ProductTableProps) {
             <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-mono">
               <div className="bg-ars/10 rounded-md p-2 text-center border border-ars/30">
                 <div className="text-ars text-[10px] uppercase">ARS</div>
-                <div className="text-ars font-bold">{formatPesos(product.precioPesos)}</div>
+                <div className="text-ars font-bold">{formatPesos(getPrice(product).precioPesos)}</div>
               </div>
               <div className="bg-brl/10 rounded-md p-2 text-center border border-brl/30">
                 <div className="text-brl text-[10px] uppercase">BRL</div>
-                <div className="text-brl font-bold">{formatReales(product.precioReales)}</div>
+                <div className="text-brl font-bold">{formatReales(getPrice(product).precioReales)}</div>
               </div>
               <div className="bg-pix/10 rounded-md p-2 text-center border border-pix/30">
                 <div className="text-pix text-[10px] uppercase font-bold">PIX</div>
-                <div className="text-pix font-bold">{formatReales(product.precioPix)}</div>
+                <div className="text-pix font-bold">{formatReales(getPrice(product).precioPix)}</div>
               </div>
             </div>
           </div>
@@ -126,13 +128,13 @@ export function ProductTable({ products }: ProductTableProps) {
                     {product.description}
                   </td>
                   <td className="px-6 py-4 text-sm text-ars text-right font-mono font-semibold tabular-nums">
-                    {formatPesos(product.precioPesos)}
+                    {formatPesos(getPrice(product).precioPesos)}
                   </td>
                   <td className="px-6 py-4 text-sm text-brl text-right font-mono font-semibold tabular-nums">
-                    {formatReales(product.precioReales)}
+                    {formatReales(getPrice(product).precioReales)}
                   </td>
                   <td className="px-6 py-4 text-sm text-pix text-right font-mono font-bold tabular-nums">
-                    {formatReales(product.precioPix)}
+                    {formatReales(getPrice(product).precioPix)}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
