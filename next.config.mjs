@@ -2,6 +2,8 @@
 const nextConfig = {
   output: 'export',
   basePath: '/wine-price-website',
+  assetPrefix: '/wine-price-website',
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },

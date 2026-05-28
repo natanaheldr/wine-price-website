@@ -8,6 +8,7 @@ import { ProductTable } from '@/components/product-table'
 import { CartSheet } from '@/components/cart-sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { ExternalLink } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -114,7 +115,7 @@ export function PriceListApp() {
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
-                  <h1 className="text-xl font-semibold text-foreground tracking-tight">Precios</h1>
+                  <h1 className="text-xl font-semibold text-foreground tracking-tight">Lista de Precios de Vinos, Champagne y Fernet</h1>
                   <div className="h-1 w-1 rounded-full bg-accent/60"></div>
                   <span className="text-sm font-mono text-accent font-bold">{cambio}</span>
                 </div>
@@ -164,8 +165,42 @@ export function PriceListApp() {
 
         {/* Main content */}
         <main className="max-w-6xl mx-auto px-4 py-8">
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+            Consultá nuestra lista de precios actualizada de vinos, champagne y fernet. 
+            Todos los precios están expresados en Pesos Argentinos (ARS), Reales (BRL) y PIX. 
+            Hacé tu pedido por WhatsApp agregando productos al carrito.
+          </p>
           <ProductTable products={getProducts()} />
         </main>
+
+        {/* Footer */}
+        <footer className="border-t border-border/20 bg-gradient-to-t from-background via-background/95 to-background/90">
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <a href="#vinos" onClick={() => setActiveCategory('vinos')} className="hover:text-foreground transition-colors">Vinos</a>
+                <span className="text-border">·</span>
+                <a href="#champagne" onClick={() => setActiveCategory('champagne')} className="hover:text-foreground transition-colors">Champagne</a>
+                <span className="text-border">·</span>
+                <a href="#fernet" onClick={() => setActiveCategory('fernet')} className="hover:text-foreground transition-colors">Fernet</a>
+              </div>
+              <div className="flex items-center gap-4">
+                <span>Himmelimherzen</span>
+                <span className="text-border">·</span>
+                <span>Precios actualizados diariamente</span>
+                <span className="text-border">·</span>
+                <a
+                  href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+                >
+                  WhatsApp <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
 
         {/* Settings Dialog */}
         <Dialog open={showSettings} onOpenChange={handleCloseSettings}>

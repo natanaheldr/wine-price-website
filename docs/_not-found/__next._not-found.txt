@@ -2,4 +2,4 @@
 2:I[39756,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js"],"default"]
 3:I[37457,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js"],"default"]
 4:[]
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"rBq3trX31c86KW-HGJY1e"}
+0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"IT873DTe7GyG05V7LsUre"}

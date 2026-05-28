@@ -7,7 +7,14 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Lista de Precios | Vinos, Champagne y Fernet',
-  description: 'Lista de precios actualizada - Vinos, Champagne y Fernet. Precios en Pesos, Reales y PIX.',
+  description: 'Lista de precios actualizada de vinos, champagne y fernet. Precios en Pesos Argentinos, Reales y PIX. Actualizado diariamente.',
+  keywords: ['vinos', 'champagne', 'fernet', 'lista de precios', 'precios vinos', 'argentina'],
+  openGraph: {
+    title: 'Lista de Precios | Vinos, Champagne y Fernet',
+    description: 'Lista de precios actualizada de vinos, champagne y fernet. Precios en Pesos, Reales y PIX.',
+    type: 'website',
+    locale: 'es_AR',
+  },
   icons: {
     icon: [
       {
