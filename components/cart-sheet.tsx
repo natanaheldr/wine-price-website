@@ -148,7 +148,7 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
                         <Plus className="h-3 w-3" />
                       </button>
                     </div>
-                    <p className="text-sm font-mono font-bold text-foreground min-w-fit">
+                    <p className="text-sm font-mono font-bold text-ars min-w-fit">
                       ${formatPesos(item.product.precioPesos * item.quantity)}
                     </p>
                   </div>
@@ -159,17 +159,17 @@ export function CartSheet({ whatsappNumber, cambio }: CartSheetProps) {
             <div className="border-t border-border/30 pt-5 mt-4 space-y-4">
               <div className="space-y-2.5 bg-secondary/30 rounded-lg p-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">ARS</span>
-                  <span className="text-sm font-mono font-bold text-foreground">${formatPesos(getTotalPesos())}</span>
+                  <span className="text-xs uppercase tracking-wider text-ars font-semibold">ARS</span>
+                  <span className="text-sm font-mono font-bold text-ars">${formatPesos(getTotalPesos())}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">BRL</span>
-                  <span className="text-sm font-mono font-bold text-foreground">R${formatReales(getTotalReales())}</span>
+                  <span className="text-xs uppercase tracking-wider text-brl font-semibold">BRL</span>
+                  <span className="text-sm font-mono font-bold text-brl">R${formatReales(getTotalReales())}</span>
                 </div>
                 <div className="h-px bg-border/30 my-2"></div>
                 <div className="flex justify-between items-center pt-1">
-                  <span className="text-xs uppercase tracking-wider text-accent font-bold">PIX</span>
-                  <span className="text-lg font-mono font-bold text-accent">R${formatReales(getTotalPix())}</span>
+                  <span className="text-xs uppercase tracking-wider text-pix font-bold">PIX</span>
+                  <span className="text-lg font-mono font-bold text-pix">R${formatReales(getTotalPix())}</span>
                 </div>
               </div>
 

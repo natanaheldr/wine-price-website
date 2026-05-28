@@ -73,17 +73,17 @@ export function ProductTable({ products }: ProductTableProps) {
               </button>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-mono">
-              <div className="bg-secondary/40 rounded-md p-2 text-center">
-                <div className="text-muted-foreground text-[10px] uppercase">ARS</div>
-                <div className="text-foreground font-bold">{formatPesos(product.precioPesos)}</div>
+              <div className="bg-ars/10 rounded-md p-2 text-center border border-ars/30">
+                <div className="text-ars text-[10px] uppercase">ARS</div>
+                <div className="text-ars font-bold">{formatPesos(product.precioPesos)}</div>
               </div>
-              <div className="bg-secondary/40 rounded-md p-2 text-center">
-                <div className="text-muted-foreground text-[10px] uppercase">BRL</div>
-                <div className="text-foreground font-bold">{formatReales(product.precioReales)}</div>
+              <div className="bg-brl/10 rounded-md p-2 text-center border border-brl/30">
+                <div className="text-brl text-[10px] uppercase">BRL</div>
+                <div className="text-brl font-bold">{formatReales(product.precioReales)}</div>
               </div>
-              <div className="bg-accent/10 rounded-md p-2 text-center border border-accent/30">
-                <div className="text-accent text-[10px] uppercase font-bold">PIX</div>
-                <div className="text-accent font-bold">{formatReales(product.precioPix)}</div>
+              <div className="bg-pix/10 rounded-md p-2 text-center border border-pix/30">
+                <div className="text-pix text-[10px] uppercase font-bold">PIX</div>
+                <div className="text-pix font-bold">{formatReales(product.precioPix)}</div>
               </div>
             </div>
           </div>
@@ -104,13 +104,13 @@ export function ProductTable({ products }: ProductTableProps) {
                 <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Producto
                 </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-6 py-4 text-right text-xs font-semibold text-ars uppercase tracking-wider">
                   ARS
                 </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-6 py-4 text-right text-xs font-semibold text-brl uppercase tracking-wider">
                   BRL
                 </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-accent uppercase tracking-wider">
+                <th className="px-6 py-4 text-right text-xs font-semibold text-pix uppercase tracking-wider">
                   PIX
                 </th>
                 <th className="px-6 py-4 w-16"></th>
@@ -125,13 +125,13 @@ export function ProductTable({ products }: ProductTableProps) {
                   <td className="px-6 py-4 text-sm text-foreground font-medium">
                     {product.description}
                   </td>
-                  <td className="px-6 py-4 text-sm text-foreground text-right font-mono font-semibold tabular-nums">
+                  <td className="px-6 py-4 text-sm text-ars text-right font-mono font-semibold tabular-nums">
                     {formatPesos(product.precioPesos)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-foreground text-right font-mono font-semibold tabular-nums">
+                  <td className="px-6 py-4 text-sm text-brl text-right font-mono font-semibold tabular-nums">
                     {formatReales(product.precioReales)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-accent text-right font-mono font-bold tabular-nums">
+                  <td className="px-6 py-4 text-sm text-pix text-right font-mono font-bold tabular-nums">
                     {formatReales(product.precioPix)}
                   </td>
                   <td className="px-6 py-4 text-right">
