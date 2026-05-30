@@ -6,14 +6,28 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Lista de Precios | Vinos, Champagne y Fernet',
-  description: 'Lista de precios actualizada de vinos, champagne y fernet. Precios en Pesos Argentinos, Reales y PIX. Actualizado diariamente.',
-  keywords: ['vinos', 'champagne', 'fernet', 'lista de precios', 'precios vinos', 'argentina'],
+  title: 'Lista de Preços | Vinhos, Champagne e Fernet | Preços atualizados',
+  description: 'Lista de preços atualizada de vinhos, champagne e fernet na Argentina. Preços em Pesos Argentinos (ARS), Reais (BRL) e PIX. Envie seu pedido pelo WhatsApp.',
+  keywords: ['vinhos', 'vinos', 'champagne', 'fernet', 'lista de preços', 'preços vinhos', 'argentina', 'comprar vinho', 'preços atualizados'],
   openGraph: {
-    title: 'Lista de Precios | Vinos, Champagne y Fernet',
-    description: 'Lista de precios actualizada de vinos, champagne y fernet. Precios en Pesos, Reales y PIX.',
+    title: 'Lista de Preços | Vinhos, Champagne e Fernet',
+    description: 'Lista de preços atualizada de vinhos, champagne e fernet. Preços em ARS, BRL e PIX. Envie seu pedido pelo WhatsApp.',
     type: 'website',
     locale: 'es_AR',
+    siteName: 'Lista de Preços',
+    url: 'https://natanaheldr.github.io/wine-price-website/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Lista de Preços | Vinhos, Champagne e Fernet',
+    description: 'Lista de preços atualizada de vinhos, champagne e fernet. Preços em ARS, BRL e PIX.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://natanaheldr.github.io/wine-price-website/',
   },
   icons: {
     icon: [
@@ -44,6 +58,20 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{
           __html: `(function(){try{var t=localStorage.getItem('lista-precios-theme');if(t==='light'){document.documentElement.classList.add('light')}document.documentElement.classList.add('theme-ready')}catch(e){}})()`
+        }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Lista de Preços - Vinhos, Champagne e Fernet',
+            url: 'https://natanaheldr.github.io/wine-price-website/',
+            description: 'Lista de preços atualizada de vinhos, champagne e fernet na Argentina. Preços em ARS, BRL e PIX.',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: 'https://natanaheldr.github.io/wine-price-website/?q={search_term_string}',
+              'query-input': 'required name=search_term_string',
+            },
+          }),
         }} />
       </head>
       <body className="font-sans antialiased">
