@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { useCart } from '@/lib/cart-context'
 import { usePriceOverrides } from '@/lib/price-overrides'
 import { ShoppingCart, X, Minus, Plus, Send, Trash2 } from 'lucide-react'
@@ -20,6 +20,75 @@ interface CartSheetProps {
   inline?: boolean
 }
 
+const formatPesos = (value: number) => value.toLocaleString('es-AR')
+const formatReales = (value: number) => value.toFixed(2)
+
+const CartItemRow = memo(function CartItemRow({
+  productId,
+  description,
+  quantity,
+  itemTotal,
+  onUpdateQuantity,
+  onRemove,
+}: {
+  productId: string
+  description: string
+  quantity: number
+  itemTotal: number
+  onUpdateQuantity: (id: string, qty: number) => void
+  onRemove: (id: string) => void
+}) {
+  return (
+    <div className="group flex items-center gap-3 rounded-xl p-3 bg-secondary/40 border border-border/30 hover:border-border/50 transition-all">
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium text-foreground leading-snug truncate">
+          {description}
+        </p>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-0.5 bg-background/60 rounded-lg p-0.5">
+            <button
+              className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+              onClick={() => onUpdateQuantity(productId, quantity - 1)}
+              aria-label="Reduzir quantidade"
+            >
+              <Minus className="h-3 w-3" />
+            </button>
+            <Input
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={(e) => {
+                const val = parseInt(e.target.value)
+                if (!isNaN(val) && val > 0) {
+                  onUpdateQuantity(productId, val)
+                }
+              }}
+              className="w-8 h-6 text-center text-xs font-bold font-mono bg-transparent border-0 text-foreground p-0"
+            />
+            <button
+              className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+              onClick={() => onUpdateQuantity(productId, quantity + 1)}
+              aria-label="Aumentar quantidade"
+            >
+              <Plus className="h-3 w-3" />
+            </button>
+          </div>
+          <span className="text-xs font-mono font-semibold text-ars ml-auto">
+            ${formatPesos(itemTotal)}
+          </span>
+        </div>
+      </div>
+      <button
+        className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0 transition-all opacity-0 group-hover:opacity-100"
+        onClick={() => onRemove(productId)}
+        aria-label={`Remover ${description}`}
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  )
+})
+
 export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
   const [open, setOpen] = useState(false)
   const {
@@ -32,28 +101,16 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
 
   const { getPrice } = usePriceOverrides()
 
-  const totalPesos = useMemo(
-    () => items.reduce((t, i) => t + getPrice(i.product, cambio).precioPesos * i.quantity, 0),
-    [items, getPrice, cambio],
-  )
-
-  const totalReales = useMemo(
-    () => items.reduce((t, i) => t + getPrice(i.product, cambio).precioReales * i.quantity, 0),
-    [items, getPrice, cambio],
-  )
-
-  const totalPix = useMemo(
-    () => items.reduce((t, i) => t + getPrice(i.product, cambio).precioPix * i.quantity, 0),
-    [items, getPrice, cambio],
-  )
-
-  const formatPesos = (value: number) => {
-    return value.toLocaleString('es-AR')
-  }
-
-  const formatReales = (value: number) => {
-    return value.toFixed(2)
-  }
+  const totals = useMemo(() => {
+    let p = 0, r = 0, pix = 0
+    for (const item of items) {
+      const price = getPrice(item.product, cambio)
+      p += price.precioPesos * item.quantity
+      r += price.precioReales * item.quantity
+      pix += price.precioPix * item.quantity
+    }
+    return { totalPesos: p, totalReales: r, totalPix: pix }
+  }, [items, getPrice, cambio])
 
   const sendToWhatsApp = () => {
     if (items.length === 0) return
@@ -67,9 +124,9 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
     })
 
     message += '---\n'
-    message += `*TOTAL ARS:* $${formatPesos(totalPesos)}\n`
-    message += `*TOTAL BRL:* R$${formatReales(totalReales)}\n`
-    message += `*TOTAL PIX:* R$${formatReales(totalPix)}`
+    message += `*TOTAL ARS:* $${formatPesos(totals.totalPesos)}\n`
+    message += `*TOTAL BRL:* R$${formatReales(totals.totalReales)}\n`
+    message += `*TOTAL PIX:* R$${formatReales(totals.totalPix)}`
 
     const encodedMessage = encodeURIComponent(message)
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
@@ -93,74 +150,36 @@ export function CartSheet({ whatsappNumber, cambio, inline }: CartSheetProps) {
       ) : (
         <>
           <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-            {items.map((item) => (
-              <div
-                key={item.product.id}
-                className="group flex items-center gap-3 rounded-xl p-3 bg-secondary/40 border border-border/30 hover:border-border/50 transition-all"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground leading-snug truncate">
-                    {item.product.description}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex items-center gap-0.5 bg-background/60 rounded-lg p-0.5">
-                      <button
-                        className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                        aria-label="Reduzir quantidade"
-                      >
-                        <Minus className="h-3 w-3" />
-                      </button>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) => {
-                          const val = parseInt(e.target.value)
-                          if (!isNaN(val) && val > 0) {
-                            updateQuantity(item.product.id, val)
-                          }
-                        }}
-                        className="w-8 h-6 text-center text-xs font-bold font-mono bg-transparent border-0 text-foreground p-0"
-                      />
-                      <button
-                        className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                        aria-label="Aumentar quantidade"
-                      >
-                        <Plus className="h-3 w-3" />
-                      </button>
-                    </div>
-                    <span className="text-xs font-mono font-semibold text-ars ml-auto">
-                      ${formatPesos(getPrice(item.product, cambio).precioPesos * item.quantity)}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  className="h-6 w-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0 transition-all opacity-0 group-hover:opacity-100"
-                  onClick={() => removeItem(item.product.id)}
-                  aria-label={`Remover ${item.product.description}`}
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))}
+            {items.map((item) => {
+              const itemTotal = getPrice(item.product, cambio).precioPesos * item.quantity
+              return (
+                <CartItemRow
+                  key={item.product.id}
+                  productId={item.product.id}
+                  description={item.product.description}
+                  quantity={item.quantity}
+                  itemTotal={itemTotal}
+                  onUpdateQuantity={updateQuantity}
+                  onRemove={removeItem}
+                />
+              )
+            })}
           </div>
 
           <div className="border-t border-border/30 pt-4 mt-4 space-y-4">
             <div className="space-y-2 bg-secondary/30 rounded-xl p-4">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-xs uppercase tracking-wider text-ars font-semibold">ARS</span>
-                <span className="text-sm font-mono font-bold text-ars">${formatPesos(totalPesos)}</span>
+                <span className="text-sm font-mono font-bold text-ars">${formatPesos(totals.totalPesos)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-xs uppercase tracking-wider text-brl font-semibold">BRL</span>
-                <span className="text-sm font-mono font-bold text-brl">R${formatReales(totalReales)}</span>
+                <span className="text-sm font-mono font-bold text-brl">R${formatReales(totals.totalReales)}</span>
               </div>
               <div className="h-px bg-border/30 my-2"></div>
               <div className="flex justify-between items-center">
                 <span className="text-xs uppercase tracking-wider text-pix font-bold">PIX</span>
-                <span className="text-base font-mono font-bold text-pix">R${formatReales(totalPix)}</span>
+                <span className="text-base font-mono font-bold text-pix">R${formatReales(totals.totalPix)}</span>
               </div>
             </div>
 

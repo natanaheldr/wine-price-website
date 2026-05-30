@@ -1,5 +1,3 @@
-import { getDocument } from 'pdfjs-dist'
-
 export interface ParsedProduct {
   description: string
   precioPesos: number | null
@@ -14,8 +12,9 @@ export async function extractTextFromPDF(
   onProgress?: (step: ParsingStep) => void,
 ): Promise<string> {
   onProgress?.('extracting')
+  const pdfjs = await import('pdfjs-dist')
   const arrayBuffer = await file.arrayBuffer()
-  const pdf = await getDocument({ data: arrayBuffer }).promise
+  const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise
   let fullText = ''
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo, useDeferredValue } from 'react'
 import type { Product } from '@/lib/products-data'
 import { useCart } from '@/lib/cart-context'
 import { usePriceOverrides } from '@/lib/price-overrides'
@@ -12,30 +12,97 @@ interface ProductTableProps {
   cambio: number
 }
 
-export function ProductTable({ products, cambio }: ProductTableProps) {
-  const [search, setSearch] = useState('')
+const formatPesos = (value: number) => value.toLocaleString('es-AR')
+const formatReales = (value: number) => value.toFixed(2)
+
+const ProductRow = memo(function ProductRow({ product, cambio }: { product: Product; cambio: number }) {
   const { addItem } = useCart()
   const { getPrice } = usePriceOverrides()
+  const p = getPrice(product, cambio)
+
+  return (
+    <div className="group relative rounded-xl bg-card border border-border/40 p-3.5 transition-all hover:border-border/60 active:scale-[0.99]">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-sm font-medium text-foreground leading-snug flex-1">
+          {product.description}
+        </p>
+        <button
+          className="shrink-0 h-9 w-9 rounded-lg bg-accent/90 flex items-center justify-center text-accent-foreground hover:bg-accent hover:shadow-lg hover:shadow-accent/25 transition-all active:scale-90"
+          onClick={() => addItem(product)}
+          aria-label={`Adicionar ${product.description}`}
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="mt-2.5 flex items-center justify-between gap-1.5">
+        <span className="text-[11px] font-mono font-bold text-ars bg-ars/10 px-1.5 py-0.5 rounded">
+          ARS ${formatPesos(p.precioPesos)}
+        </span>
+        <span className="text-[11px] font-mono font-semibold text-brl whitespace-nowrap">
+          R${formatReales(p.precioReales)}
+        </span>
+        <span className="text-[11px] font-mono font-bold text-pix whitespace-nowrap">
+          R${formatReales(p.precioPix)}
+        </span>
+      </div>
+    </div>
+  )
+})
+
+const TableRow = memo(function TableRow({ product, cambio }: { product: Product; cambio: number }) {
+  const { addItem } = useCart()
+  const { getPrice } = usePriceOverrides()
+  const p = getPrice(product, cambio)
+
+  return (
+    <tr className="group hover:bg-secondary/20 transition-colors">
+      <td className="px-5 py-3.5">
+        <p className="text-sm text-foreground font-medium leading-snug">
+          {product.description}
+        </p>
+      </td>
+      <td className="px-5 py-3.5 text-right">
+        <span className="text-sm font-mono font-bold text-ars tabular-nums">
+          ${formatPesos(p.precioPesos)}
+        </span>
+      </td>
+      <td className="px-5 py-3.5 text-right">
+        <span className="text-sm font-mono font-semibold text-brl tabular-nums whitespace-nowrap">
+          R${formatReales(p.precioReales)}
+        </span>
+      </td>
+      <td className="px-5 py-3.5 text-right">
+        <span className="text-sm font-mono font-bold text-pix tabular-nums whitespace-nowrap">
+          R${formatReales(p.precioPix)}
+        </span>
+      </td>
+      <td className="px-5 py-3.5 text-right">
+        <button
+          className="h-8 w-8 rounded-lg bg-accent/90 flex items-center justify-center text-accent-foreground opacity-0 group-hover:opacity-100 hover:bg-accent hover:shadow-lg hover:shadow-accent/25 transition-all active:scale-90"
+          onClick={() => addItem(product)}
+          aria-label={`Adicionar ${product.description}`}
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+      </td>
+    </tr>
+  )
+})
+
+export const ProductTable = memo(function ProductTable({ products, cambio }: ProductTableProps) {
+  const [search, setSearch] = useState('')
+  const deferredSearch = useDeferredValue(search)
 
   const filteredProducts = useMemo(() => {
-    if (!search.trim()) return products
-    const searchLower = search.toLowerCase()
-    return products.filter(p => 
+    if (!deferredSearch.trim()) return products
+    const searchLower = deferredSearch.toLowerCase()
+    return products.filter(p =>
       p.description.toLowerCase().includes(searchLower)
     )
-  }, [products, search])
-
-  const formatPesos = (value: number) => {
-    return value.toLocaleString('es-AR')
-  }
-
-  const formatReales = (value: number) => {
-    return value.toFixed(2)
-  }
+  }, [products, deferredSearch])
 
   return (
     <div className="space-y-4">
-      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
         <Input
@@ -56,48 +123,16 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
         )}
       </div>
 
-      {/* Result count */}
       {search && (
         <p className="text-xs text-muted-foreground">
           {filteredProducts.length} {filteredProducts.length === 1 ? 'resultado' : 'resultados'}
         </p>
       )}
       
-      {/* Mobile cards */}
       <div className="lg:hidden space-y-2">
-        {filteredProducts.map((product) => {
-          const p = getPrice(product, cambio)
-          return (
-            <div
-              key={product.id}
-              className="group relative rounded-xl bg-card border border-border/40 p-3.5 transition-all hover:border-border/60 active:scale-[0.99]"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-medium text-foreground leading-snug flex-1">
-                  {product.description}
-                </p>
-                <button
-                  className="shrink-0 h-9 w-9 rounded-lg bg-accent/90 flex items-center justify-center text-accent-foreground hover:bg-accent hover:shadow-lg hover:shadow-accent/25 transition-all active:scale-90"
-                  onClick={() => addItem(product)}
-                  aria-label={`Adicionar ${product.description}`}
-                >
-                  <Plus className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="mt-2.5 flex items-center justify-between gap-1.5">
-                <span className="text-[11px] font-mono font-bold text-ars bg-ars/10 px-1.5 py-0.5 rounded">
-                  ARS ${formatPesos(p.precioPesos)}
-                </span>
-                <span className="text-[11px] font-mono font-semibold text-brl whitespace-nowrap">
-                  R${formatReales(p.precioReales)}
-                </span>
-                <span className="text-[11px] font-mono font-bold text-pix whitespace-nowrap">
-                  R${formatReales(p.precioPix)}
-                </span>
-              </div>
-            </div>
-          )
-        })}
+        {filteredProducts.map((product) => (
+          <ProductRow key={product.id} product={product} cambio={cambio} />
+        ))}
         {filteredProducts.length === 0 && (
           <div className="py-16 text-center">
             <p className="text-sm text-muted-foreground">Sem resultados</p>
@@ -105,7 +140,6 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
         )}
       </div>
 
-      {/* Desktop table */}
       <div className="hidden lg:block">
         <div className="rounded-xl border border-border/40 overflow-hidden bg-card">
           <table className="w-full">
@@ -127,45 +161,9 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/20">
-              {filteredProducts.map((product) => {
-                const p = getPrice(product, cambio)
-                return (
-                  <tr
-                    key={product.id}
-                    className="group hover:bg-secondary/20 transition-colors"
-                  >
-                    <td className="px-5 py-3.5">
-                      <p className="text-sm text-foreground font-medium leading-snug">
-                        {product.description}
-                      </p>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="text-sm font-mono font-bold text-ars tabular-nums">
-                        ${formatPesos(p.precioPesos)}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="text-sm font-mono font-semibold text-brl tabular-nums whitespace-nowrap">
-                        R${formatReales(p.precioReales)}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="text-sm font-mono font-bold text-pix tabular-nums whitespace-nowrap">
-                        R${formatReales(p.precioPix)}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <button
-                        className="h-8 w-8 rounded-lg bg-accent/90 flex items-center justify-center text-accent-foreground opacity-0 group-hover:opacity-100 hover:bg-accent hover:shadow-lg hover:shadow-accent/25 transition-all active:scale-90"
-                        onClick={() => addItem(product)}
-                        aria-label={`Adicionar ${product.description}`}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
+              {filteredProducts.map((product) => (
+                <TableRow key={product.id} product={product} cambio={cambio} />
+              ))}
               {filteredProducts.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-5 py-16 text-center text-sm text-muted-foreground">
@@ -179,4 +177,4 @@ export function ProductTable({ products, cambio }: ProductTableProps) {
       </div>
     </div>
   )
-}
+})
