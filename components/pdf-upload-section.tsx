@@ -12,8 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
-  extractTextFromPDF,
-  parsePricesWithAI,
+  extractAndParsePDF,
   type ParsedProduct,
   type ParsingStep,
 } from '@/lib/pdf-parser'
@@ -99,15 +98,9 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
 
     try {
       setError('')
-      const text = await extractTextFromPDF(file, setStep)
-
-      if (!text.trim()) {
-        throw new Error('El PDF no contiene texto extraible. Asegurate de que no sea una imagen escaneada.')
-      }
-
       recordApiCall()
       setQuota(getApiQuota())
-      const parsed = await parsePricesWithAI(text, key, setStep)
+      const parsed = await extractAndParsePDF(file, key, setStep)
       setStep('done')
 
       const results: MatchResult[] = []
