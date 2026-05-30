@@ -274,8 +274,18 @@ export function PriceListApp() {
         <main className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex gap-6">
             <div className="flex-1 min-w-0">
+              <nav className="flex flex-wrap gap-2 mb-4" aria-label="Navegação rápida">
+                <a href="#vinhos" onClick={() => setActiveCategory('vinos')} className="text-[11px] font-medium text-accent hover:text-accent/80 transition-colors px-2.5 py-1 rounded-md bg-accent/5 border border-accent/10">Vinhos</a>
+                <a href="#champagne" onClick={() => setActiveCategory('champagne')} className="text-[11px] font-medium text-accent hover:text-accent/80 transition-colors px-2.5 py-1 rounded-md bg-accent/5 border border-accent/10">Champagne</a>
+                <a href="#fernet" onClick={() => setActiveCategory('fernet')} className="text-[11px] font-medium text-accent hover:text-accent/80 transition-colors px-2.5 py-1 rounded-md bg-accent/5 border border-accent/10">Fernet</a>
+                <a href="#carrinho" onClick={() => { const el = document.querySelector('[aria-label*=\"carrinho\"]'); if (el instanceof HTMLElement) el.click() }} className="text-[11px] font-medium text-accent hover:text-accent/80 transition-colors px-2.5 py-1 rounded-md bg-accent/5 border border-accent/10">Carrinho</a>
+                <a href="#whatsapp" onClick={() => window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank')} className="text-[11px] font-medium text-accent hover:text-accent/80 transition-colors px-2.5 py-1 rounded-md bg-accent/5 border border-accent/10">WhatsApp</a>
+              </nav>
+              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                Confira nossa <strong>lista de preços</strong> completa de <strong>vinhos</strong>, <strong>champagne</strong> e <strong>fernet</strong> com preços atualizados diariamente. Todos os valores em Pesos Argentinos (ARS), Reais (BRL) e PIX.
+              </p>
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                Todos os preços em ARS, BRL e PIX. Adicione produtos ao carrinho e envie seu pedido pelo WhatsApp.
+                Adicione os produtos da sua preferência ao carrinho e envie seu pedido diretamente pelo WhatsApp. Preços em <strong>vinhos</strong>, <strong>champagne</strong> e <strong>fernet</strong> com atualização constante.
               </p>
               <ProductTable products={getProducts()} cambio={cambio} />
             </div>
@@ -329,6 +339,44 @@ export function PriceListApp() {
             </div>
           </div>
         </footer>
+
+        {/* Social share */}
+        <div className="border-t border-border/20 bg-background">
+          <div className="max-w-6xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-center gap-3 text-xs text-muted-foreground">
+              <span className="text-[10px] uppercase tracking-wider">Compartilhar:</span>
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent('Confira a lista de preços de vinhos, champagne e fernet: https://natanaheldr.github.io/wine-price-website/')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+                aria-label="Compartilhar no WhatsApp"
+              >
+                WhatsApp
+              </a>
+              <span className="text-border">·</span>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://natanaheldr.github.io/wine-price-website/')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+                aria-label="Compartilhar no Facebook"
+              >
+                Facebook
+              </a>
+              <span className="text-border">·</span>
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Confira a lista de preços de vinhos, champagne e fernet:')}&url=${encodeURIComponent('https://natanaheldr.github.io/wine-price-website/')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+                aria-label="Compartilhar no Twitter"
+              >
+                Twitter
+              </a>
+            </div>
+          </div>
+        </div>
 
         {/* Settings Dialog */}
         <Dialog open={showSettings} onOpenChange={(open) => { if (!open) handleCloseSettings() }}>
