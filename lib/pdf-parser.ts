@@ -14,14 +14,26 @@ export async function extractTextFromPDF(
   onProgress?.('extracting')
   const pdfjs = await import('pdfjs-dist')
   const arrayBuffer = await file.arrayBuffer()
-  const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise
+
+  let pdf
+  try {
+    pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise
+  } catch {
+    throw new Error('No se pudo leer el PDF. Asegurate de que sea un archivo PDF valido con texto, no una imagen.')
+  }
+
   let fullText = ''
   for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i)
-    const content = await page.getTextContent()
-    const pageText = content.items.map((item) => ('str' in item ? item.str : '')).join(' ')
-    fullText += pageText + '\n'
+    try {
+      const page = await pdf.getPage(i)
+      const content = await page.getTextContent()
+      const pageText = content.items.map((item) => ('str' in item ? item.str : '')).join(' ')
+      fullText += pageText + '\n'
+    } catch {
+      // skip unreadable pages
+    }
   }
+
   return fullText
 }
 

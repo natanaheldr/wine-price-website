@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
-2:I[79621,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js","/wine-price-website/_next/static/chunks/0tffvsbw3xq~n.js","/wine-price-website/_next/static/chunks/0vns9go6db4vj.js"],"PriceListApp"]
+2:I[79621,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js","/wine-price-website/_next/static/chunks/0tffvsbw3xq~n.js","/wine-price-website/_next/static/chunks/0592kqygwh4ld.js"],"PriceListApp"]
 3:I[97367,["/wine-price-website/_next/static/chunks/0dbhjjzl8qfwv.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/wine-price-website/_next/static/chunks/0tffvsbw3xq~n.js","async":true}],["$","script","script-1",{"src":"/wine-price-website/_next/static/chunks/0vns9go6db4vj.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"b8lb3bTyohzjW3wTDnmfr"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{}],[["$","script","script-0",{"src":"/wine-price-website/_next/static/chunks/0tffvsbw3xq~n.js","async":true}],["$","script","script-1",{"src":"/wine-price-website/_next/static/chunks/0592kqygwh4ld.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"hwZ6EHWhHXFZ4kzRbbzAu"}
 5:null

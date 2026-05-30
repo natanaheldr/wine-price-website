@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import {
   Upload,
   FileText,
@@ -17,11 +17,9 @@ import {
   type ParsedProduct,
   type ParsingStep,
 } from '@/lib/pdf-parser'
-import { usePriceOverrides, type PriceOverride } from '@/lib/price-overrides'
+import { usePriceOverrides } from '@/lib/price-overrides'
 import { getApiQuota, recordApiCall } from '@/lib/api-guard'
 import type { Product } from '@/lib/products-data'
-
-const API_KEY_STORAGE = 'lista-precios-openai-key'
 
 interface MatchResult {
   productId: string
@@ -42,8 +40,7 @@ interface PdfUploadSectionProps {
 }
 
 export function PdfUploadSection({ products, categoryName }: PdfUploadSectionProps) {
-  const [apiKeyInput, setApiKeyInput] = useState('')
-  const [showApiInput, setShowApiInput] = useState(false)
+  const [apiKey, setApiKey] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [step, setStep] = useState<ParsingStep | null>(null)
   const [error, setError] = useState('')
@@ -53,18 +50,32 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
   const [quota, setQuota] = useState(getApiQuota())
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    setQuota(getApiQuota())
-  }, [])
+  const resetAll = () => {
+    setFile(null)
+    setStep(null)
+    setError('')
+    setMatches([])
+    setApplied(false)
+    setApiKey('')
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]
     if (!f) return
 
+    if (f.type && f.type !== 'application/pdf' && !f.name.toLowerCase().endsWith('.pdf')) {
+      setError('Solo se aceptan archivos PDF.')
+      setFile(null)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      return
+    }
+
     const q = getApiQuota()
     setQuota(q)
     if (!q.canProceed) {
       setError(`Limite de uso alcanzado. Vuelve en ${q.remainingHour === 0 ? '1 hora' : '24 horas'}.`)
+      if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
 
@@ -72,34 +83,28 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
     setError('')
     setApplied(false)
     setMatches([])
+    setStep(null)
+  }
 
-    const storedKey = localStorage.getItem(API_KEY_STORAGE)
-    if (!storedKey) {
-      setShowApiInput(true)
+  const handleStartProcessing = async () => {
+    if (!file || !apiKey.trim()) return
+
+    const q = getApiQuota()
+    if (!q.canProceed) {
+      setError(`Limite de uso alcanzado. Vuelve en ${q.remainingHour === 0 ? '1 hora' : '24 horas'}.`)
       return
     }
-    await processFile(f, storedKey)
-  }
 
-  const handleApiKeySubmit = async () => {
-    if (!apiKeyInput.trim()) return
-    localStorage.setItem(API_KEY_STORAGE, apiKeyInput.trim())
-    setShowApiInput(false)
-    setApiKeyInput('')
-    if (file) {
-      const q = getApiQuota()
-      if (!q.canProceed) {
-        setError(`Limite de uso alcanzado. Vuelve en ${q.remainingHour === 0 ? '1 hora' : '24 horas'}.`)
-        return
-      }
-      await processFile(file, apiKeyInput.trim())
-    }
-  }
+    const key = apiKey.trim()
 
-  const processFile = async (f: File, key: string) => {
     try {
       setError('')
-      const text = await extractTextFromPDF(f, setStep)
+      const text = await extractTextFromPDF(file, setStep)
+
+      if (!text.trim()) {
+        throw new Error('El PDF no contiene texto extraible. Asegurate de que no sea una imagen escaneada.')
+      }
+
       recordApiCall()
       setQuota(getApiQuota())
       const parsed = await parsePricesWithAI(text, key, setStep)
@@ -147,6 +152,8 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
   }
 
   const hasChanges = matches.some((m) => m.changed)
+  const needsKey = file && !apiKey && step === null
+  const readyToProcess = file && apiKey.trim() && step === null
 
   return (
     <div className="space-y-4">
@@ -171,58 +178,72 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
           </span>
         </div>
 
-        {showApiInput && (
-          <div className="space-y-2 mb-3">
+        <div
+          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+            !quota.canProceed
+              ? 'border-destructive/40 cursor-not-allowed opacity-50'
+              : 'border-border/40 hover:border-accent/40'
+          } ${step !== null ? 'pointer-events-none opacity-60' : ''}`}
+          onClick={() => {
+            if (quota.canProceed && step === null) fileInputRef.current?.click()
+          }}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,application/pdf"
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          {file ? (
+            <div className="flex items-center justify-center gap-2 text-sm text-foreground">
+              <FileText className="h-4 w-4 text-accent" />
+              {file.name}
+              <button
+                className="text-muted-foreground hover:text-foreground ml-1"
+                onClick={(e) => { e.stopPropagation(); resetAll() }}
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
+              {quota.canProceed ? 'Hace clic para seleccionar un PDF' : 'Limite alcanzado'}
+            </div>
+          )}
+        </div>
+
+        {needsKey && (
+          <div className="space-y-2 mt-3">
             <label className="text-xs font-medium text-muted-foreground">
-              OpenAI API Key
+              OpenAI API Key (no se guarda, solo para esta sesion)
             </label>
             <div className="flex gap-2">
               <Input
                 type="password"
                 placeholder="sk-..."
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
                 className="flex-1 h-10 text-xs bg-secondary border-0"
-                onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()}
+                onKeyDown={(e) => e.key === 'Enter' && handleStartProcessing()}
               />
               <Button
                 size="sm"
-                onClick={handleApiKeySubmit}
-                disabled={!apiKeyInput.trim()}
+                onClick={handleStartProcessing}
+                disabled={!apiKey.trim()}
               >
-                Guardar
+                Procesar
               </Button>
             </div>
           </div>
         )}
 
-        {!showApiInput && (
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-              !quota.canProceed
-                ? 'border-destructive/40 cursor-not-allowed opacity-50'
-                : 'border-border/40 hover:border-accent/40'
-            }`}
-            onClick={() => !quota.canProceed || fileInputRef.current?.click()}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
-            {file ? (
-              <div className="flex items-center justify-center gap-2 text-sm text-foreground">
-                <FileText className="h-4 w-4 text-accent" />
-                {file.name}
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                <FileText className="h-8 w-8 mx-auto mb-2 opacity-40" />
-                {quota.canProceed ? 'Hace clic para seleccionar un PDF' : 'Limite alcanzado'}
-              </div>
-            )}
+        {readyToProcess && (
+          <div className="mt-3">
+            <Button onClick={handleStartProcessing} className="w-full gap-2">
+              Procesar PDF con IA
+            </Button>
           </div>
         )}
 
@@ -306,18 +327,28 @@ export function PdfUploadSection({ products, categoryName }: PdfUploadSectionPro
               Aplicar {matches.filter((m) => m.changed).length} cambios
             </Button>
           ) : (
-            <div className="flex items-center gap-2 text-sm text-green-500 justify-center">
-              <Check className="h-4 w-4" />
-              Precios actualizados correctamente
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-green-500 justify-center">
+                <Check className="h-4 w-4" />
+                Precios actualizados correctamente
+              </div>
+              <Button variant="outline" size="sm" className="w-full text-xs" onClick={resetAll}>
+                Subir otro PDF
+              </Button>
             </div>
           )}
         </div>
       )}
 
       {step === 'done' && matches.length === 0 && (
-        <p className="text-xs text-muted-foreground text-center">
-          No se encontraron productos coincidentes en la lista actual.
-        </p>
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground text-center">
+            No se encontraron productos coincidentes en la lista actual.
+          </p>
+          <Button variant="outline" size="sm" className="w-full text-xs" onClick={resetAll}>
+            Intentar con otro PDF
+          </Button>
+        </div>
       )}
     </div>
   )

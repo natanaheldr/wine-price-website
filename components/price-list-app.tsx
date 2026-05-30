@@ -81,6 +81,7 @@ export function PriceListApp() {
   }, [])
 
   useEffect(() => {
+    localStorage.removeItem('lista-precios-openai-key')
     const saved = localStorage.getItem(CAMBIO_STORAGE_KEY)
     if (saved) {
       const value = parseFloat(saved)
